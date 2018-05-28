@@ -1,0 +1,10 @@
+header ipv4_t ipv4;
+
+parser parse_ipv4 {
+    extract(ipv4);
+    return select(latest.protocol) {
+        TCP_PROTOCOL : parse_tcp;
+        UDP_PROTOCOL : parse_udp;
+        default : ingress;
+    }
+}
