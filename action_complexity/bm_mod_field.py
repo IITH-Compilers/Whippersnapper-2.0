@@ -5,6 +5,7 @@ from p4gen.genpcap import get_set_field_pcap
 from p4gen.genpcap import set_custom_field_pcap
 from p4gen import copy_scripts
 from parsing.bm_parser import add_headers_and_parsers
+from parsing.bm_parser import add_headers_and_parsers_16
 from p4gen.p4template import *
 
 modifications = {
@@ -35,7 +36,14 @@ def write_to_custom_header(action_name, nb_operation):
     instruction_set ='\tmodify_field(header_0.field_0, 1);\n'
     for i in range(1, nb_operation):
         instruction_set += '\tmodify_field(header_0.field_{0}, header_0.field_{1});\n'.format(i, i-1)
+    return add_compound_action_14(action_name, '', instruction_set)
+
+def write_to_custom_header_16(action_name, nb_operation):
+    instruction_set ='\t\thdr.header_0.field_0 = 16w1;\n'
+    for i in range(1, nb_operation):
+        instruction_set += '\t\thdr.header_0.field_{0} = hdr.header_0.field_{1};\n'.format(i, i-1)
     return add_compound_action(action_name, '', instruction_set)
+
 
 def generate_pisces_command_mod_ip_udp(nb_operation, out_dir, checksum=False):
     rules = add_pisces_forwarding_rule()
@@ -69,6 +77,21 @@ def generate_pisces_command(nb_operation, out_dir, checksum=False):
     with open ('%s/pisces_rules.txt' % out_dir, 'w') as out:
         out.write(rules)
 
+def add_ingress_block_16(nb_operations):
+    
+    actions = nop_action()
+    action_name = 'mod_headers'
+    actions += write_to_custom_header_16(action_name, nb_operations)
+    tables = forward_table_16()
+    table_name = 'test_tbl'
+    match = '\t\t\thdr.ptp.reserved2 : exact;'
+    action = '\t\t\t_nop;\n\t\t\t{0};'.format(action_name)
+    tables += add_table(table_name, match, action, 4, 16)
+    applies = '\t\tforward_table.apply();\n\t\t%s.apply();' % table_name
+    arguments = 'inout headers hdr, inout metadata meta, inout standard_metadata_t standard_metadata'
+
+    return add_control_block_16('ingress', actions, tables, applies, arguments)
+
 def benchmark_field_write(nb_operations, do_checksum=False):
     """
     This method generate the P4 program to benchmark packet modification
@@ -85,16 +108,16 @@ def benchmark_field_write(nb_operations, do_checksum=False):
     fwd_tbl = 'forward_table'
     nb_headers = 1
     program  = add_headers_and_parsers(nb_headers, nb_operations)
-    program += nop_action()
+    program += nop_action_14()
     program += forward_table()
 
     action_name = 'mod_headers'
-    program += write_to_custom_header(action_name, nb_operations)
+    program += write_to_custom_header_16(action_name, nb_operations)
 
     table_name = 'test_tbl'
     match = 'ptp.reserved2 : exact;'
     actions = '\t\t_nop;\n\t\t{0};'.format(action_name)
-    program += add_table(table_name, match, actions, 4)
+    program += add_table(table_name, match, actions, 4, 14)
 
 
     program += control(fwd_tbl, apply_table(table_name))
@@ -111,6 +134,59 @@ def benchmark_field_write(nb_operations, do_checksum=False):
     copy_scripts(out_dir)
     set_custom_field_pcap(nb_operations, out_dir, packet_size=256)
     generate_pisces_command(nb_operations, out_dir, do_checksum)
+    return True
+
+def benchmark_field_write_16(nb_operations, do_checksum=False):
+    """
+    This method generate the P4 program to benchmark packet modification
+
+    :param nb_operations: the number of Set-Field actions
+    :type nb_operations: int
+    :returns: bool -- True if there is no error
+
+    """
+    out_dir = 'output'
+    if not os.path.exists(out_dir):
+       os.makedirs(out_dir)
+
+    fwd_tbl = 'forward_table'
+    nb_headers = 1
+    program  = add_headers_and_parsers_16(nb_headers, nb_operations)
+
+    program += add_ingress_block_16(nb_operations)
+
+    arguments = 'inout headers hdr, inout metadata meta, inout standard_metadata_t standard_metadata'
+    program += add_control_block_16('egress', '', '', '', arguments)
+
+    applies = '\t\tpacket.emit(hdr.ethernet);\n'
+    applies += '\t\tpacket.emit(hdr.ptp);\n'
+
+    for i in range(nb_headers):
+        applies += '\t\tpacket.emit(hdr.header_%d);\n' % i
+
+    program += add_control_block_16('DeparserImpl', '', '', applies, 'packet_out packet, in headers hdr')
+
+    program += add_control_block_16('verifyChecksum', '', '', '', 'inout headers hdr, inout metadata meta')
+    program += add_control_block_16('computeChecksum', '', '', '', 'inout headers hdr, inout metadata meta')
+
+    program += add_main_module()
+
+    with open ('%s/main.p4' % out_dir, 'w') as out:
+        out.write(program)
+
+    action_name = 'mod_headers'
+    table_name = 'test_tbl'
+
+    commands = add_default_rule(table_name, '_nop')
+    # commands += add_rule(table_name, action_name, 319)
+    commands += add_default_rule(table_name, action_name)
+    commands += cli_commands(fwd_tbl)
+    with open ('%s/commands.txt' % out_dir, 'w') as out:
+        out.write(commands)
+    copy_scripts(out_dir)
+    set_custom_field_pcap(nb_operations, out_dir, packet_size=256)
+    generate_pisces_command(nb_operations, out_dir, do_checksum)
+
     return True
 
 
@@ -139,8 +215,7 @@ def benchmark_field_write_to_ip_udp(nb_operations, do_checksum=False):
     table_name = 'test_tbl'
     match = 'udp.dstPort : exact;'
     actions = '\t\t_nop;\n\t\t{0};'.format(action_name)
-    program += add_table(table_name, match, actions, 4)
-
+    program += add_table(table_name, match, actions, 4, 14)
 
     program += control(fwd_tbl, apply_table(table_name))
 
