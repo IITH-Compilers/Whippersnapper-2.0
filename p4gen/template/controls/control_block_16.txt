@@ -1,0 +1,10 @@
+control $block_name($arguments) {
+	
+$actions
+$tables
+
+    apply{
+$applies
+    }
+
+}

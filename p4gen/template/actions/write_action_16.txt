@@ -1,0 +1,1 @@
+        $register.write((bit<$width>)hdr.$index, (bit<$width>)hdr.$field);

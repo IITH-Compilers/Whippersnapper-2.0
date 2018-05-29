@@ -1,0 +1,4 @@
+    state $state_name {
+        packet.extract(hdr.$header_name);
+        transition $next_state;
+    }

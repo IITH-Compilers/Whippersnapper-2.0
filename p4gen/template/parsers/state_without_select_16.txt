@@ -1,0 +1,3 @@
+    state $state_name {
+        transition $next_state;
+    }

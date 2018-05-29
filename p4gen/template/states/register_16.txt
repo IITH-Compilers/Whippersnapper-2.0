@@ -1,0 +1,2 @@
+register<bit<$element_width>>(32w$nb_element) $register_name;
+

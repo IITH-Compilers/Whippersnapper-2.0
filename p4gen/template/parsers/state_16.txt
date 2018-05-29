@@ -1,0 +1,6 @@
+    state $state_name {
+        packet.extract(hdr.$header_name);
+        transition select(hdr.$header_name.$select_field) {
+$next_states
+        }
+    }

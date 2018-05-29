@@ -1,0 +1,16 @@
+    action forward(bit<9> port) {
+        standard_metadata.egress_spec = port;
+    }
+    action _drop() {
+        mark_to_drop();
+    }    
+    table $table_name {
+        actions = {
+            forward;
+            _drop;
+        }
+        key = {
+            hdr.ethernet.dstAddr: exact;
+        }
+        size = 4;
+    }

@@ -1,4 +1,7 @@
     table $tbl_name {
+        key = {
+$matches
+        } 
         actions = {
 $actions
         }

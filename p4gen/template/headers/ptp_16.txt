@@ -1,0 +1,17 @@
+header ptp_t {
+    bit<4>  transportSpecific;
+    bit<4>  messageType;
+    bit<4>  reserved;
+    bit<4>  versionPTP;
+    bit<16> messageLength;
+    bit<8>  domainNumber;
+    bit<8>  reserved2;
+    bit<16> flags;
+    bit<64> correction;
+    bit<32> reserved3;
+    bit<80> sourcePortIdentity;
+    bit<16> sequenceId;
+    bit<8>  PTPcontrol;
+    bit<8>  logMessagePeriod;
+    bit<80> originTimestamp;
+}
