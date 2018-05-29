@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 
-import os
-import sys
-sys.path.insert(0, os.path.abspath('..'))
-
 import argparse
 
 from parsing.bm_parser import benchmark_parser_header
@@ -13,6 +9,13 @@ from processing.bm_pipeline import benchmark_pipeline
 from state_access.bm_memory import benchmark_memory
 from packet_modification.bm_modification import benchmark_modification
 from action_complexity.bm_mod_field import benchmark_field_write
+from parsing.bm_parser import benchmark_parser_header_16
+from parsing.bm_parser import benchmark_parser_with_header_field_16
+from parsing.bm_parser import parser_complexity_16
+from processing.bm_pipeline import benchmark_pipeline_16
+from state_access.bm_memory import benchmark_memory_16
+from packet_modification.bm_modification import benchmark_modification_16
+from action_complexity.bm_mod_field import benchmark_field_write_16
 
 
 features = ['parse-header', 'parse-field', 'parse-complex', # Parsing
@@ -22,6 +25,8 @@ features = ['parse-header', 'parse-field', 'parse-complex', # Parsing
             'read-state', 'write-state'                     # State Access
             ]
 
+versions = [ '14','16' ]
+
 def main():
     parser = argparse.ArgumentParser(description='A programs that generate a'
                             ' P4 program for benchmarking a particular feature')
@@ -29,6 +34,9 @@ def main():
                 help='select a feature for benchmarking')
     parser.add_argument('--checksum', default=False, action='store_true',
                             help='perform update checksum')
+    #Version
+    parser.add_argument('--version', choices=versions,
+                 help= 'select the version for testing')
     # Processing options
     parser.add_argument('--tables', default=1, type=int, help='number of tables')
     parser.add_argument('--table-size', default=1, type=int,
@@ -53,31 +61,47 @@ def main():
 
     args = parser.parse_args()
 
-    if args.feature == 'parse-header':
-        benchmark_parser_header(args.headers, args.fields, do_checksum=args.checksum)
-    elif args.feature == 'parse-field':
+    if args.feature == 'parse-header' and args.version == '14':
+        benchmark_parser_header(args.headers, args.fields, do_checksum=args.checksum, )
+    elif args.feature == 'parse-field' and args.version == '14':
         benchmark_parser_with_header_field(args.fields, do_checksum=args.checksum)
-    elif args.feature == 'parse-complex':
+    elif args.feature == 'parse-complex' and args.version == '14':
         parser_complexity(args.depth, args.fanout)
-    elif args.feature == 'set-field':
+    elif args.feature == 'set-field' and args.version == '14':
         benchmark_field_write(args.operations, do_checksum=args.checksum)
-    elif args.feature == 'add-header':
+    elif args.feature == 'add-header' and args.version == '14':
         benchmark_modification(args.headers, args.fields, 'add')
-    elif args.feature == 'rm-header':
+    elif args.feature == 'rm-header' and args.version == '14':
         benchmark_modification(args.headers, args.fields, 'rm')
-    elif args.feature == 'pipeline':
+    elif args.feature == 'pipeline' and args.version == '14':
         benchmark_pipeline(args.tables, args.table_size)
-    elif args.feature == 'read-state':
+    elif args.feature == 'read-state' and args.version == '14':
         benchmark_memory(args.registers, args.element_width, args.nb_element,
                             args.operations, False)
-    elif args.feature == 'write-state':
+    elif args.feature == 'write-state' and args.version == '14':
         benchmark_memory(args.registers, args.element_width, args.nb_element,
                             args.operations, True)
-    else:
-        parser.print_help()
-        sys.exit(0)
 
-    print "Generate files to 'output' directory"
+    elif args.feature == 'parse-header' and args.version == '16':
+        benchmark_parser_header_16(args.headers, args.fields, do_checksum=args.checksum, )
+    elif args.feature == 'parse-field' and args.version == '16':
+        benchmark_parser_with_header_field_16(args.fields, do_checksum=args.checksum)
+    elif args.feature == 'parse-complex' and args.version == '16':
+        parser_complexity_16(args.depth, args.fanout)
+    elif args.feature == 'set-field' and args.version == '16':
+        benchmark_field_write_16(args.operations, do_checksum=args.checksum)
+    elif args.feature == 'add-header' and args.version == '16':
+        benchmark_modification_16(args.headers, args.fields, 'add')
+    elif args.feature == 'rm-header' and args.version == '16':
+        benchmark_modification_16(args.headers, args.fields, 'rm')
+    elif args.feature == 'pipeline' and args.version == '16':
+        benchmark_pipeline_16(args.tables, args.table_size)
+    elif args.feature == 'read-state' and args.version == '16':
+        benchmark_memory_16(args.registers, args.element_width, args.nb_element,
+                            args.operations, False)
+    elif args.feature == 'write-state' and args.version == '16':
+        benchmark_memory_16(args.registers, args.element_width, args.nb_element,
+                            args.operations, True)
 
 if __name__=='__main__':
     main()
