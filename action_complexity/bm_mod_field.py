@@ -112,7 +112,7 @@ def benchmark_field_write(nb_operations, do_checksum=False):
     program += forward_table()
 
     action_name = 'mod_headers'
-    program += write_to_custom_header_16(action_name, nb_operations)
+    program += write_to_custom_header(action_name, nb_operations)
 
     table_name = 'test_tbl'
     match = 'ptp.reserved2 : exact;'
