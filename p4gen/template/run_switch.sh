@@ -2,7 +2,7 @@
 
 
 BMV2_PATH=${P4BENCHMARK_ROOT:?}/behavioral-model
-P4C_BM_PATH=$P4BENCHMARK_ROOT/p4c-bm
+P4C_BM_PATH=${P4BENCHMARK_ROOT:?}/p4c-bm
 P4C_BM_SCRIPT=$P4C_BM_PATH/p4c_bm/__main__.py
 
 
