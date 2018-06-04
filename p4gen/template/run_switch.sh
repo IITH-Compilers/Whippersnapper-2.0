@@ -1,15 +1,15 @@
-#!/bin/bash
 
-
-BMV2_PATH=${P4BENCHMARK_ROOT:?}/behavioral-model
-P4C_BM_PATH=${P4BENCHMARK_ROOT:?}/p4c-bm
-P4C_BM_SCRIPT=$P4C_BM_PATH/p4c_bm/__main__.py
+BMV2_PATH=../../behavioral-model
+P4C_BM_PATH=../../p4c
+P4C_BM_SCRIPT=p4c-bm2-ss
 
 
 PROG="main"
 
+read -p "Enter the language version {p4-14|p4-16} = " VERSION
+
 set -m
-$P4C_BM_SCRIPT $PROG.p4 --json $PROG.json
+$P4C_BM_SCRIPT --std $VERSION $PROG.p4 -o $PROG.json
 
 if [ $? -ne 0 ]; then
 echo "p4 compilation failed"
