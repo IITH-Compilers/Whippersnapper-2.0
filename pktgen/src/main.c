@@ -15,6 +15,10 @@
 #define APP_INFO    1
 #define APP_DEBUG   2
 
+//Additional Functionality for plotting the Latency values
+float plot_latency;
+int plot_count;
+
 static int force_quit = 0;
 static int idle_timeout = 3;
 /*
@@ -149,8 +153,16 @@ void average_latency(struct app* ctx)
         return;
     }
     pthread_mutex_lock(&ctx->mutex_stat);
+
     float avg_us = (float) stat.latency / stat.nb_packets;
-    fprintf(ctx->fp, "%-8lu %-6.3f\n", stat.nb_packets, avg_us);
+
+    //Additional Functionality for plotting Latency
+    plot_count++;
+    plot_latency += avg_us;
+
+    printf(" Packets sent : Average_latency   ");
+
+    fprintf(ctx->fp, "%-8lu : %-6.3f\n", stat.nb_packets, avg_us);
     stat.total_packets += stat.nb_packets;
     /* reset counter */
     stat.nb_packets = 0;
@@ -264,6 +276,10 @@ int main(int argc, char* argv[])
         app_ctx.out = app_ctx.sniff;
     }
 
+    //Additional functionality to Plot Latency
+    plot_latency = 0;
+    plot_count = 0;
+
     pthread_mutex_init(&app_ctx.mutex_stat, NULL);
 
     if (pthread_create(&sniff_thread, NULL, sniff, &app_ctx) < 0) {
@@ -348,6 +364,10 @@ int main(int argc, char* argv[])
         fprintf(stderr, "Error joining thread\n");
         exit(EXIT_FAILURE);
     }
+
+    //Additional functionality for plotting Latency
+    FILE *fp1 = fopen("data.txt", "a");
+    fprintf(fp1, "%-6.3f\n", plot_latency/plot_count);
 
     final_report(app_ctx.count);
 
