@@ -1,6 +1,5 @@
 #!/bin/bash
 
-num_tables=30
 BMV2_PATH=../../../p4benchmark/behavioral-model
 P4C_BM_PATH=../../../p4c
 PKTGEN_PATH=../pktgen/build/p4benchmark
@@ -12,10 +11,14 @@ CLI_PATH=$BMV2_PATH/tools/runtime_CLI.py
 PROG="main"
 
 read -p "Enter the language version {14|16} = " VERSION
+read -p "No. of Packets to send = " PACKETS
+read -p "Rate of sending packets(bytes/sec) = " RATE
+   
+rm -rf output/
 
-for i in 4 5 6   
+for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15     
 do
-	p4benchmark --feature parse-header --headers $i --fields 32 --version $VERSION
+	p4benchmark --feature  --headers $i --fields 2 --version $VERSION
 	
 	cd output
 	
@@ -42,7 +45,7 @@ do
 	echo "READY!!!" 
 	
 	echo "Running the pktgen" 
-	./$PKTGEN_PATH -p test.pcap -i veth4 -s veth0 -c 1000-t 100 
+	./$PKTGEN_PATH -p test.pcap -i veth4 -s veth0 -c $PACKETS -t $RATE 
 	echo "Completed pktgen" 
 	
         ps -ef | grep simple_switch | grep -v grep | awk '{print $2}' | xargs kill
@@ -52,4 +55,6 @@ do
 	cd ..	
 
 done
+
+cp output/data.txt parse-header-$VERSION-$PACKETS-$RATE.txt
  
