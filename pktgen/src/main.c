@@ -15,10 +15,6 @@
 #define APP_INFO    1
 #define APP_DEBUG   2
 
-//Additional Functionality for plotting the Latency values
-float plot_latency;
-int plot_count;
-
 static int force_quit = 0;
 static int idle_timeout = 3;
 /*
@@ -103,7 +99,7 @@ void parse_args(int argc, char **argv)
     config.bps = 1;
     config.log_level = APP_INFO;
     /* Parse command line */
-    while ((opt = getopt(argc, argv, "c:t:l:i:s:p:f:o:")) != EOF) {
+    while ((opt = getopt(argc, argv, "c:t:l:i:s:p:f:o")) != EOF) {
         switch (opt) {
         case 'c':
             config.count = atoi(optarg);
@@ -127,8 +123,9 @@ void parse_args(int argc, char **argv)
             config.filter_exp = strdup(optarg);
             break;
         case 'o':
-            config.output_fn = strdup(optarg);
+            config.output_fn = "data.txt";
             break;
+ 
         default:
             print_app_usage(app_name);
             exit(EXIT_FAILURE);
@@ -139,7 +136,7 @@ void parse_args(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
     if (config.output_fn == NULL)
-        config.output_fn = strdup("stat.csv");
+        config.output_fn = strdup("data.txt");
 }
 
 void average_latency(struct app* ctx)
@@ -153,16 +150,9 @@ void average_latency(struct app* ctx)
         return;
     }
     pthread_mutex_lock(&ctx->mutex_stat);
-
     float avg_us = (float) stat.latency / stat.nb_packets;
 
-    //Additional Functionality for plotting Latency
-    plot_count++;
-    plot_latency += avg_us;
-
-    printf(" Packets sent : Average_latency   ");
-
-    fprintf(ctx->fp, "%-8lu : %-6.3f\n", stat.nb_packets, avg_us);
+    fprintf(ctx->fp, "%-6.3f\n", avg_us);
     stat.total_packets += stat.nb_packets;
     /* reset counter */
     stat.nb_packets = 0;
@@ -257,12 +247,7 @@ int main(int argc, char* argv[])
     struct bpf_program fp;
     app_ctx.sniff = init_dev(&fp, config.interface, config.filter_exp);
 
-
-    #ifdef WRITE_TO_FILE
-        app_ctx.fp = fopen(config.output_fn, "w");
-    #else
-        app_ctx.fp = stdout;
-    #endif
+    app_ctx.fp = fopen("data.txt", "a");
 
     if (app_ctx.fp == NULL) {
         fprintf(stderr, "Error Opening file to write\n");
@@ -275,10 +260,6 @@ int main(int argc, char* argv[])
     } else {
         app_ctx.out = app_ctx.sniff;
     }
-
-    //Additional functionality to Plot Latency
-    plot_latency = 0;
-    plot_count = 0;
 
     pthread_mutex_init(&app_ctx.mutex_stat, NULL);
 
@@ -298,7 +279,7 @@ int main(int argc, char* argv[])
      * some to read.
      */
 
-    #define TIME_WINDOW_US 100L
+    #define TIME_WINDOW_US 10000L
     unsigned int max_bytes_per_window = ((config.bps * TIME_WINDOW_US) / 1000000L);
 
     struct timespec window_start_time;
@@ -308,6 +289,7 @@ int main(int argc, char* argv[])
 
     while ((packet = pcap_next(input_packets, &header)) != NULL) {
         struct timeval tv;
+
         size_t buflen = header.caplen + sizeof(struct timeval);
         fprintf(stderr, "packet-size %zu\n", buflen);
         unsigned char buf[buflen];
@@ -317,9 +299,10 @@ int main(int argc, char* argv[])
             gettimeofday(&tv, NULL);
             memcpy(buf + header.caplen, &tv, sizeof(struct timeval));
             pcap_inject(app_ctx.out, buf, buflen);
-            bytes_sent_in_window += buflen;
+            bytes_sent_in_window += buflen;	    
 
             if (bytes_sent_in_window >= max_bytes_per_window) {
+
                 struct timespec now;
                 struct timespec thresh;
                 thresh.tv_sec = window_start_time.tv_sec;
@@ -345,6 +328,7 @@ int main(int argc, char* argv[])
                 // Reset counters and timestamp for next window
                 bytes_sent_in_window = 0;
                 clock_gettime(CLOCK_REALTIME, &window_start_time);
+
             }
         }
     }
@@ -365,10 +349,7 @@ int main(int argc, char* argv[])
         exit(EXIT_FAILURE);
     }
 
-    //Additional functionality for plotting Latency
-    FILE *fp1 = fopen("data.txt", "a");
-    fprintf(fp1, "%-6.3f\n", plot_latency/plot_count);
-
+	fprintf(app_ctx.fp, "\n\n");    
     final_report(app_ctx.count);
 
     if (config.log_level == APP_DEBUG)
@@ -381,9 +362,8 @@ int main(int argc, char* argv[])
     pcap_close(input_packets);
     free_config();
 
-    #ifdef WRITE_TO_FILE
-        fclose(app_ctx.fp);
-    #endif
+    fclose(app_ctx.fp);
+
     pthread_mutex_destroy(&app_ctx.mutex_stat);
     pthread_exit(NULL);
 
