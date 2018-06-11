@@ -123,7 +123,7 @@ void parse_args(int argc, char **argv)
             config.filter_exp = strdup(optarg);
             break;
         case 'o':
-            config.output_fn = "data.txt";
+            config.output_fn = "temp.txt";
             break;
  
         default:
@@ -136,7 +136,7 @@ void parse_args(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
     if (config.output_fn == NULL)
-        config.output_fn = strdup("data.txt");
+        config.output_fn = strdup("temp.txt");
 }
 
 void average_latency(struct app* ctx)
@@ -247,7 +247,7 @@ int main(int argc, char* argv[])
     struct bpf_program fp;
     app_ctx.sniff = init_dev(&fp, config.interface, config.filter_exp);
 
-    app_ctx.fp = fopen("data.txt", "a");
+    app_ctx.fp = fopen("temp.txt", "w");
 
     if (app_ctx.fp == NULL) {
         fprintf(stderr, "Error Opening file to write\n");
@@ -348,8 +348,7 @@ int main(int argc, char* argv[])
         fprintf(stderr, "Error joining thread\n");
         exit(EXIT_FAILURE);
     }
-
-	fprintf(app_ctx.fp, "\n\n");    
+       
     final_report(app_ctx.count);
 
     if (config.log_level == APP_DEBUG)

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-BMV2_PATH=../../../p4benchmark/behavioral-model
-P4C_BM_PATH=../../../p4c
+BMV2_PATH=../../behavioral-model
+P4C_BM_PATH=../../p4c
 PKTGEN_PATH=../pktgen/build/p4benchmark
 P4C_BM_SCRIPT=p4c-bm2-ss
 SWITCH_PATH=$BMV2_PATH/targets/simple_switch/simple_switch
@@ -16,7 +16,7 @@ read -p "Rate of sending packets(bytes/sec) = " RATE
    
 rm -rf output/
 
-for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 
+for i in 1 2 3
 do
 	p4benchmark --feature parse-header --headers $i --fields 2 --version $VERSION
 	
@@ -48,12 +48,15 @@ do
 	./$PKTGEN_PATH -p test.pcap -i veth4 -s veth0 -c $PACKETS -t $RATE 
 	echo "Completed pktgen" 
 	
-        ps -ef | grep simple_switch | grep -v grep | awk '{print $2}' | xargs kill
+    ps -ef | grep simple_switch | grep -v grep | awk '{print $2}' | xargs kill
 
 	echo "Killed Switch Process" 
 	
-	cd ..	
+	cd ..
+
+	./DataAlgo
 
 done
 
 cp output/data.txt header-$VERSION-$PACKETS-$RATE.txt
+

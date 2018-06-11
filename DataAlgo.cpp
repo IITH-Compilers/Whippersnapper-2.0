@@ -1,6 +1,6 @@
 #include <iostream>
-#include <map>
-#include <list>
+#include <math.h>
+#include <vector>
 
 using namespace std;
 
@@ -11,11 +11,12 @@ int main()
 	FILE *out = fopen("output/data.txt" , "a");
 
 	vector<float> data;
+	float temp;
 
 	do
 	{
-		fscanf(in, "%-6.3f", temp);
-		vector.push(temp);
+		fscanf(in, "%f", &temp);
+		data.push_back(temp);
 		
 		//Put in hashtable accordingly
 		
@@ -25,32 +26,31 @@ int main()
 
 	//More algo to write to out file
 
-	return 0;
+	int n = data.size();
+	int count=0;
+	float mean=0, lim=0;
 
-}
+	for(int i=0;i<n;i++)
+		mean+=data[i];
 
+	mean = mean/n;
 
+	for(int i=0;i<n;i++)
+		lim += (data[i]-mean)*(data[i]-mean);
 
+	lim = sqrt(lim);
 
+	temp=0;	
+	for(int i=0;i<n;i++)
+		if(data[i]<mean+lim && data[i]>mean-lim)
+		{
+			temp+=data[i];
+			count++;
+		}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	cout<<endl<<temp/count<<endl;
+	fprintf(out, "%6.3f\n", temp/count);
 
 	return 0;
+
 }
