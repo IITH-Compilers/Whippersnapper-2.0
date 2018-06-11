@@ -16,9 +16,9 @@ read -p "Rate of sending packets(bytes/sec) = " RATE
    
 rm -rf output/
 
-for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30
 do
-	p4benchmark --feature parse-header --headers $i --fields 2 --version $VERSION
+	p4benchmark --feature pipeline --tables $i --table-size 32 --version $VERSION
 	
 	cd output
 	
@@ -58,7 +58,7 @@ do
 
 done
 
-./Percent header-$VERSION-$PACKETS-$RATE-Percent.txt
+./Percent pipeline-$VERSION-$PACKETS-$RATE-Percent.txt
 
-cp output/data.txt header-$VERSION-$PACKETS-$RATE.txt
+cp output/data.txt pipeline-$VERSION-$PACKETS-$RATE.txt
 

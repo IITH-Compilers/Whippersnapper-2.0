@@ -6,11 +6,16 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
+	char *in_file;
 	char *out_file;
 
-	if(argc>0) out_file = argv[1];
+	if(argc>0) 
+	{
+		in_file = argv[1];
+		out_file = argv[2];
+	}
 
-	FILE *in = fopen("output/data.txt", "r");
+	FILE *in = fopen(in_file, "r");
 	FILE *out = fopen(out_file , "w");
 
 	vector<float> arr;
@@ -22,7 +27,10 @@ int main(int argc, char **argv)
 	do
 	{
 		fscanf(in, "%f", &temp);
-		arr.push_back(temp);		
+		arr.push_back(temp);
+		
+		//Put in hashtable accordingly
+		
 
 	}
 	while(!feof(in));
