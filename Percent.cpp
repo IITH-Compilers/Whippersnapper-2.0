@@ -6,14 +6,17 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-	char *filename;
+	char *in_file;
+	char *out_file;
 
-	if(argc>0) filename = argv[1];
+	if(argc>0) 
+	{
+		in_file = argv[1];
+		out_file = argv[2];
+	}
 
-	cout<<filename<<endl;
-
-	FILE *in = fopen("output/data.txt", "r");
-	FILE *out = fopen(filename , "w");
+	FILE *in = fopen(in_file, "r");
+	FILE *out = fopen(out_file , "w");
 
 	vector<float> arr;
 	float temp;

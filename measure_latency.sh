@@ -16,7 +16,7 @@ read -p "Rate of sending packets(bytes/sec) = " RATE
    
 rm -rf output/
 
-for i in 1 2 3
+for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
 do
 	p4benchmark --feature parse-header --headers $i --fields 2 --version $VERSION
 	
