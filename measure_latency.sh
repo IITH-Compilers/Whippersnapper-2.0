@@ -58,5 +58,7 @@ do
 
 done
 
+./Percent header-$VERSION-$PACKETS-$RATE-Percent.txt
+
 cp output/data.txt header-$VERSION-$PACKETS-$RATE.txt
 
