@@ -14,7 +14,8 @@ Run the following commands::
 Generate P4 Program and PCAP file for testing
 ---------------------------------------------
 
-::  '--version' option can be used to set the P4 Program language to 14/16
+``'--version' option can be used to set the P4 Program language to 14/16``
+
 
 * **Benchmark parse field**
 
@@ -140,28 +141,31 @@ To measure the latency produced by simple_switch (the time for packet to be proc
 1. Using pktgen: Build pktgen, by the above procedure
 
 **Setup**
-::	sudo ./veth_setup.sh -- once per session
-::	g++ DataAlgo.cpp -o DataAlgo
-::	g++ Percent.cpp -o Percent
-::	Change lines 21, 61, 63 in measure_latency.sh according to the feature being tested.
+```
+	sudo ./veth_setup.sh -- once per session
+	g++ DataAlgo.cpp -o DataAlgo
+	g++ Percent.cpp -o Percent
+	Change lines 21, 61, 63 in measure_latency.sh according to the feature being tested.
+```
 
 **Run Test**
-::	sudo ./measure_latency.sh -- give desired no of packets, transmission rate and version, ex: 10000, 10000, 16
+``	sudo ./measure_latency.sh -- give desired no of packets, transmission rate and version, ex: 10000, 10000, 16``
 
-The latency values will be stored to <feature> - <version> - <packets> - <rate>.txt and the normalised percentage alues will be stored to <feature> - <version> - <packets> - <rate> - Percent.txt
+The latency values will be stored to <feature>-<version>-<packets>-<rate>.txt and the normalised percentage alues will be stored to <feature>-<version>-<packets>-<rate>-Percent.txt
 
 DataAlgo filters the outliers in the dataset to some extent. It first calculates the mean of entire data, then clusters data surrounding the mean within an offset of standard deviation and then recalculates the mean of this clustered data. 
 
 2. Using tshark (3rd party)
 
 **Setup**
-::	sudo apt install tshark
-::	cd /usr/share/wireshark/
-::	nano init.lua  -- In line 29 set disable_lua = true
-::	change line 27 of latency_new.sh according to the feature being tested.
-
+```
+	sudo apt install tshark
+	cd /usr/share/wireshark/
+	nano init.lua  -- In line 29 set disable_lua = true
+	change line 27 of latency_new.sh according to the feature being tested.
+```
 **Run Test**
-::	sudo ./latency_new.sh -- give desired no of packets and version, ex: 10000, 16
+``	sudo ./latency_new.sh -- give desired no of packets and version, ex: 10000, 16``
 
 **Working**
 The above script is to automate the testing of a feature completely. The actual process going on is
