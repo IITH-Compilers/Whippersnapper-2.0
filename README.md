@@ -138,7 +138,7 @@ The output produced by Whippersnapper 2.0 is capable of running the p4 program o
 The test.pcap file has the structure of the packet to be sent.
 To measure the latency produced by simple_switch (the time for packet to be processed and pass out of the switch) can be measured in two ways:
 
-1. Using pktgen: Build pktgen, by the above procedure
+# Using pktgen: Build pktgen, by the above procedure
 
 **Setup**
 ```
@@ -149,13 +149,15 @@ To measure the latency produced by simple_switch (the time for packet to be proc
 ```
 
 **Run Test**
-``	sudo ./measure_latency.sh -- give desired no of packets, transmission rate and version, ex: 10000, 10000, 16``
+```	
+sudo ./measure_latency.sh -- give desired no of packets, transmission rate and version, ex: 10000, 10000, 16
+```
 
 The latency values will be stored to <feature>-<version>-<packets>-<rate>.txt and the normalised percentage alues will be stored to <feature>-<version>-<packets>-<rate>-Percent.txt
 
 DataAlgo filters the outliers in the dataset to some extent. It first calculates the mean of entire data, then clusters data surrounding the mean within an offset of standard deviation and then recalculates the mean of this clustered data. 
 
-2. Using tshark (3rd party)
+# Using tshark (3rd party)
 
 **Setup**
 ```
@@ -165,9 +167,11 @@ DataAlgo filters the outliers in the dataset to some extent. It first calculates
 	change line 27 of latency_new.sh according to the feature being tested.
 ```
 **Run Test**
-``	sudo ./latency_new.sh -- give desired no of packets and version, ex: 10000, 16``
+```
+	sudo ./latency_new.sh -- give desired no of packets and version, ex: 10000, 16`
+```
 
-**Working**
+# Working
 The above script is to automate the testing of a feature completely. The actual process going on is
 1. The p4benchmark will produce the output directory to test certain feature.
 2. The main.p4 program will be compiled with p4c-bm2-ss compiler.
