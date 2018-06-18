@@ -134,6 +134,17 @@ def forward_table_16():
     d = { 'table_name': 'forward_table' }
     return read_template('template/tables/forward_table_16.txt', d)
 
+def test_table_16(tbl_name):
+    """
+    This method returns the 'forwarding_table' definition
+
+    :returns:  str -- the code in plain text
+    :raises: None
+
+    """
+    d = { 'table_name': tbl_name }
+    return read_template('template/tables/test_table.txt', d)
+
 def add_table_no_match(tbl_name, actions='_nop;', tbl_size=1):
     """
     This method returns the table definition that matches everything

@@ -1,7 +1,7 @@
 !/bin/bash
 
-BMV2_PATH=../../behavioral-model
-P4C_BM_PATH=../../p4c
+BMV2_PATH=/home/ubuntu/Desktop/p4Sim/bmv2
+P4C_BM_PATH=p4c
 PKTGEN_PATH=../pktgen/build/p4benchmark
 P4C_BM_SCRIPT=p4c-bm2-ss
 SWITCH_PATH=$BMV2_PATH/targets/simple_switch/simple_switch
@@ -12,7 +12,7 @@ PROG="main"
 #read -p "Enter the language version {14|16} = " VERSION
 #read -p "No. of Packets to send = " PACKETS
 VERSION="16"
-PACKETS="10000"
+PACKETS="100"
 
 #ps -ef | grep simple_switch | grep -v grep | awk '{print $2}' | xargs kill
 #ps -ef | grep tshark | grep -v grep | awk '{print $2}' | xargs kill
@@ -20,16 +20,18 @@ PACKETS="10000"
 rm latency.csv
 rm -rf output/
 
-for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+for i in range(1,16):
 do
         rm test_in.csv
         rm test_out.csv
-        p4benchmark --feature parse-field --fields $i --version $VERSION
 
+	
+
+        p4benchmark --feature parse-header --fields 2 --headers $i --version $VERSION
         cd output
 
         set -m
-        $P4C_BM_SCRIPT --std p4-$VERSION $PROG.p4 -o $PROG.json
+        $P4C_BM_SCRIPT --p4v $VERSION $PROG.p4 -o $PROG.json
 
         if [ $? -ne 0 ]; then
         echo "p4 compilation failed"
@@ -60,7 +62,7 @@ do
         echo "Killed Switch Process" 
 
         cd ..
-
+	sleep 5
         python edit_csv.py >> latency.csv
 
         ps -ef | grep tshark | grep -v grep | awk '{print $2}' | xargs kill

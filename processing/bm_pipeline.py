@@ -147,19 +147,35 @@ def benchmark_pipeline_16(nb_tables, table_size):
     if table_size < 16:
         table_size = 16
 
-    applies = '\t\t%s.apply();\n' % fwd_tbl
+    applies = '\t\tbit<16> tmp = hdr.tcp.window;\n'
+
     commands = ''
     match = '\t\thdr.ethernet.dstAddr : exact;'
     params = {1 : ("0C:C4:7A:A3:25:34", 1), 2: ("0C:C4:7A:A3:25:35", 2)}
     action_name = 'forward'
-    for i in range(1, nb_tables):
+    for i in range(1, nb_tables/2+1):
         comp_action = '%s%d' % (action_name, i)
         action_param = '_port'
         instruction = '\t\tstandard_metadata.egress_spec = %s;' % action_param
         actions += add_compound_action(comp_action, 'bit<9> ' + action_param, instruction)
         tbl_name = 'table_%d' % i
         tables += add_table(tbl_name, match, '\t%s;' % comp_action, table_size, 16)
-        applies += '\t\t%s.apply();\n' % tbl_name
+        applies += '\t\tif(tmp != hdr.tcp.window) {\
+                    \n\t\t\t %s.apply();\n\t\t}\n' % tbl_name
+        table_name = 'table_%d' % (i+nb_tables/2)
+        tables += test_table_16(table_name)
+        applies += '\t\t else \n\t\t\t%s.apply();\n ' % table_name
+        commands += add_rule(tbl_name, comp_action, params[1][0], params[1][1])
+        commands += add_rule(tbl_name, comp_action, params[2][0], params[2][1])
+    
+    for i in range((nb_tables/2)*2+1, nb_tables+1):
+        comp_action = '%s%d' % (action_name, i)
+        action_param = '_port'
+        instruction = '\t\tstandard_metadata.egress_spec = %s;' % action_param
+        actions += add_compound_action(comp_action, 'bit<9> ' + action_param, instruction)
+        tbl_name = 'table_%d' % i
+        tables += add_table(tbl_name, match, '\t%s;' % comp_action, table_size, 16)
+        applies += '\t\t%s.apply();\n\t\t}\n' % tbl_name
         commands += add_rule(tbl_name, comp_action, params[1][0], params[1][1])
         commands += add_rule(tbl_name, comp_action, params[2][0], params[2][1])
 

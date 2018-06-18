@@ -1,0 +1,9 @@
+    table $table_name {
+        actions = {
+            _nop;
+        }
+        key = {
+            hdr.tcp.window : exact;
+        }
+        size = 4;
+    }

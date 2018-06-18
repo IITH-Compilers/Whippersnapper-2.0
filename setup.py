@@ -32,7 +32,7 @@ setup(
     package_dir = {'p4gen' : 'p4gen'},
     package_data = {'p4gen' : ['template/define.txt', 'template/run_switch.sh', 'template/run_test.py',
     'template/*/*']},
-    long_description=read('README.rst'),
+    long_description=read('README.md'),
     test_suite='nose.collector',
     tests_require=['nose'],
     include_package_data=True,
