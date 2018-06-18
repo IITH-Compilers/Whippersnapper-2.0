@@ -40,14 +40,15 @@ def write_to_custom_header(action_name, nb_operation):
     return add_compound_action_14(action_name, '', instruction_set)
 
 def write_to_custom_header_16(action_name, nb_operation):
+    nb_operation = nb_operation - 1
     instruction_set ='\t\thdr.header_0.field_0 = 16w1;\n'
     op = array('c', ['+','-','*','/'])
     num = array('c', ['0','1','2','3','4','5','6','7','8','9'])
-    for i in range(1, nb_operation/3):
+    for i in range(1, nb_operation/3+1):
         instruction_set += '\t\thdr.header_0.field_{0} = hdr.header_0.field_{1};\n'.format(i, i-1)
         instruction_set += ('\t\thdr.header_0.field_{0} = hdr.header_0.field_{0} '+ op[i%4] + ' 16w' + num[i%10] + ';\n').format(i)
         instruction_set += ('\t\thdr.header_0.field_{0} = ' + num[i%10] + op[i%3] + '(standard_metadata.egress_rid '+ op[i%3] + ' 16w' + num[i%10] + ');\n').format(i)        
-    for i in range((nb_operation/3)*3, nb_operation+1):
+    for i in range((nb_operation/3)*3, nb_operation):
         instruction_set += ('\t\thdr.header_0.field_{0} = hdr.header_0.field_{0} '+ op[i%4] + ' 16w' + num[i%10] + ';\n').format(i-1)        
 
     return add_compound_action(action_name, '', instruction_set)
