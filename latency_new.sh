@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 BMV2_PATH=/home/ubuntu/Desktop/p4Sim/bmv2
 P4C_BM_PATH=p4c
@@ -20,52 +20,53 @@ PACKETS="100"
 rm latency.csv
 rm -rf output/
 
-for i in range(1,16):
+for((j=1;j<=3;j++));
 do
-        rm test_in.csv
-        rm test_out.csv
+        for ((i=1;i<=16;i++));
+        do
+                rm test_in.csv
+                rm test_out.csv
 
-	
 
-        p4benchmark --feature parse-header --fields 2 --headers $i --version $VERSION
-        cd output
 
-        set -m
-        $P4C_BM_SCRIPT --p4v $VERSION $PROG.p4 -o $PROG.json
+                p4benchmark --feature parse-header --fields 2 --headers $i --version $VERSION
+                cd output
 
-        if [ $? -ne 0 ]; then
-        echo "p4 compilation failed"
-        exit 1
-        fi
-        sudo tshark -c $PACKETS -i veth0 -T fields -e frame.time_epoch -e frame.number -E header=n -E quote=d -E occurrence=f >> ../test_in.csv &
-        sudo tshark -c $PACKETS -i veth4 -T fields -e frame.time_epoch -e frame.number -E header=n -E quote=d -E occurrence=f >> ../test_out.csv &
-        sleep 6
+                set -m
+                $P4C_BM_SCRIPT --p4v $VERSION $PROG.p4 -o $PROG.json
 
-        sudo echo "sudo" > /dev/null
-        sudo $SWITCH_PATH >/dev/null 2>&1
-        sudo $SWITCH_PATH $PROG.json \
-            -i 0@veth0 -i 1@veth2 -i 2@veth4 -i 3@veth6 -i 4@veth8 \
-            --log-console &
+                if [ $? -ne 0 ]; then
+                echo "p4 compilation failed"
+                exit 1
+                fi
+                sudo tshark -c $PACKETS -i veth0 -T fields -e frame.time_epoch -e frame.number -E header=n -E quote=d -E occurrence=f >> ../test_in.csv &
+                sudo tshark -c $PACKETS -i veth4 -T fields -e frame.time_epoch -e frame.number -E header=n -E quote=d -E occurrence=f >> ../test_out.csv &
+                sleep 6
 
-        sleep 2
-        echo "**************************************"
-        echo "Sending commands to switch through CLI"
-        echo "**************************************"
-        $CLI_PATH --json $PROG.json < commands.txt
+                sudo echo "sudo" > /dev/null
+                sudo $SWITCH_PATH >/dev/null 2>&1
+                sudo $SWITCH_PATH $PROG.json \
+                        -i 0@veth0 -i 1@veth2 -i 2@veth4 -i 3@veth6 -i 4@veth8 \
+                        --log-console &
 
-        echo "READY!!!" 
+                sleep 2
+                echo "**************************************"
+                echo "Sending commands to switch through CLI"
+                echo "**************************************"
+                $CLI_PATH --json $PROG.json < commands.txt
 
-       ./run_test.py -n $PACKETS
+                echo "READY!!!" 
 
-        ps -ef | grep simple_switch | grep -v grep | awk '{print $2}' | xargs kill
+                ./run_test.py -n $PACKETS
 
-        echo "Killed Switch Process" 
+                ps -ef | grep simple_switch | grep -v grep | awk '{print $2}' | xargs kill
 
-        cd ..
-	sleep 5
-        python edit_csv.py >> latency.csv
+                echo "Killed Switch Process" 
 
-        ps -ef | grep tshark | grep -v grep | awk '{print $2}' | xargs kill
-
+                cd ..
+                sleep 5
+                python edit_csv.py >> latency.csv
+                ps -ef | grep tshark | grep -v grep | awk '{print $2}' | xargs kill
+        done
 done
 
