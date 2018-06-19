@@ -147,7 +147,7 @@ def benchmark_pipeline_16(nb_tables, table_size):
     if table_size < 16:
         table_size = 16
 
-    applies = '\t\tbit<16> tmp = hdr.tcp.window;\n'
+    applies = '\t\t%s.apply();\n\t\tbit<16> tmp = hdr.tcp.window;\n' % fwd_tbl
 
     commands = ''
     match = '\t\thdr.ethernet.dstAddr : exact;'
