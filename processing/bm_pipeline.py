@@ -175,7 +175,7 @@ def benchmark_pipeline_16(nb_tables, table_size):
         actions += add_compound_action(comp_action, 'bit<9> ' + action_param, instruction)
         tbl_name = 'table_%d' % i
         tables += add_table(tbl_name, match, '\t%s;' % comp_action, table_size, 16)
-        applies += '\t\t%s.apply();\n\t\t}\n' % tbl_name
+        applies += '\t\t%s.apply();\n' % tbl_name
         commands += add_rule(tbl_name, comp_action, params[1][0], params[1][1])
         commands += add_rule(tbl_name, comp_action, params[2][0], params[2][1])
 

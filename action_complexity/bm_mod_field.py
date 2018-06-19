@@ -51,7 +51,7 @@ def write_to_custom_header_16(action_name, nb_operation):
         instruction_set += ('\t\thdr.header_0.field_{0} = ' + num[i%10] + op[i%3] + '(standard_metadata.egress_rid '+ op[i%3] + ' 16w' + num[i%10] + ');\n').format(i)        
     for j in range((nb_operation/3)*3, nb_operation):
         i = i+1
-        instruction_set += ('\t\thdr.header_0.field_{0} = hdr.header_0.field_{0} '+ op[i%4] + ' 16w' + num[i%10] + ';\n').format(i)        
+        instruction_set += ('\t\thdr.header_0.field_{0} = hdr.header_0.field_{0} '+ op[i%3] + ' 16w' + num[i%10] + ';\n').format(i)        
 
     return add_compound_action(action_name, '', instruction_set)
 

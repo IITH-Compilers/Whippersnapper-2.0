@@ -1,7 +1,7 @@
 #!/bin/bash
 
-BMV2_PATH=/home/ubuntu/Desktop/p4Sim/bmv2
-P4C_BM_PATH=p4c
+BMV2_PATH=../../behavioral-model
+P4C_BM_PATH=../../p4c
 PKTGEN_PATH=../pktgen/build/p4benchmark
 P4C_BM_SCRIPT=p4c-bm2-ss
 SWITCH_PATH=$BMV2_PATH/targets/simple_switch/simple_switch
@@ -12,7 +12,7 @@ PROG="main"
 #read -p "Enter the language version {14|16} = " VERSION
 #read -p "No. of Packets to send = " PACKETS
 VERSION="16"
-PACKETS="100"
+PACKETS="10000"
 
 #ps -ef | grep simple_switch | grep -v grep | awk '{print $2}' | xargs kill
 #ps -ef | grep tshark | grep -v grep | awk '{print $2}' | xargs kill
@@ -22,14 +22,15 @@ rm -rf output/
 
 for((j=1;j<=3;j++));
 do
-        for ((i=1;i<=16;i++));
+        for ((i=1;i<=5;i++));
         do
                 rm test_in.csv
                 rm test_out.csv
 
-
-
-                p4benchmark --feature parse-header --fields 2 --headers $i --version $VERSION
+		p4benchmark --feature pipeline --tables $i --table-size 32 --version $VERSION
+		#p4benchmark --feature parse-complex --depth $i --fanout 2 --version $VERSION
+		#p4benchmark --feature set-field --operations $i --version $VERSION
+                #p4benchmark --feature parse-header --fields 2 --headers $i --version $VERSION
                 cd output
 
                 set -m
