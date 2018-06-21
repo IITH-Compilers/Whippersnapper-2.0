@@ -42,13 +42,13 @@ def write_to_custom_header(action_name, nb_operation):
 def write_to_custom_header_16(action_name, nb_operation):
     nb_operation = nb_operation - 1
     instruction_set ='\t\thdr.header_0.field_0 = 16w1;\n'
-    op = array('c', ['+','-','*','/'])
+    op = array('c', ['+','-','*','+'])
     num = array('c', ['1','3','5','6','7','9'])
     i = 0
     for i in range(1, nb_operation/3+1):
         instruction_set += '\t\thdr.header_0.field_{0} = hdr.header_0.field_{1};\n'.format(i, i-1)
         instruction_set += ('\t\thdr.header_0.field_{0} = hdr.header_0.field_{0} '+ op[i%4] + ' 16w' + num[i%6] + ';\n').format(i)
-        instruction_set += ('\t\thdr.header_0.field_{0} = ' + num[i%6] + op[i%3] + '(standard_metadata.egress_rid '+ op[i%3] + ' 16w' + num[i%6] + ');\n').format(i)        
+        instruction_set += ('\t\thdr.header_0.field_{0} = ' + num[i%6] + op[i%3] + '(standard_metadata.egress_rid '+ op[i%3] + ' 16w' + num[i%6] + ') + hdr.header_0.field_{0};\n').format(i)        
     for j in range((nb_operation/3)*3, nb_operation):
         i = i+1
         instruction_set += ('\t\thdr.header_0.field_{0} = hdr.header_0.field_{0} '+ op[i%3] + ' 16w' + num[i%6] + ';\n').format(i)        
