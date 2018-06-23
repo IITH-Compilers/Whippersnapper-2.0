@@ -22,7 +22,7 @@ Generate P4 Program and PCAP file for testing
 The generated P4 program parses Ethernet,
 PTP and a customized header containing 4 fields and each field is 16-bit wide::
 
-    p4benchmark --feature parse-field --fields 4 
+    p4benchmark --feature parse-field --fields 4 --version 16
 
 * **Benchmark parse header**
 
@@ -30,50 +30,50 @@ The generated P4 program parses Ethernet, PTP and
 a customized number of headers each containing a customized number of fields.
 Each field is 16-bit wide::
 
-    p4benchmark --feature parse-header --fields 4 --headers 4
+    p4benchmark --feature parse-header --fields 4 --headers 4 --version 16
 
 * **Benchmark parse complex**
 
 The generated P4 program parses Ethernet, PTP and
 a parse graph that has the depth of 2 and each node has 2 branches::
 
-    p4benchmark --feature parse-complex --depth 2 --fanout 2
+    p4benchmark --feature parse-complex --depth 2 --fanout 2 --version 16
 
 * **Benchmark action complexity**
 
 The generated P4 program has N=2 number of set-field operations::
 
-    p4benchmark --feature set-field --operations 2
+    p4benchmark --feature set-field --operations 2 --version 16
 
 * **Benchmark header addition**
 
 The generated P4 program adds N=2 number of headers to packets::
 
-    p4benchmark --feature add-header --headers 2
+    p4benchmark --feature add-header --headers 2 --version 16
 
 * **Benchmark header removal**
 
 The generated P4 program removes N=2 number of headers to packets::
 
-    p4benchmark --feature rm-header --headers 2
+    p4benchmark --feature rm-header --headers 2 --version 16
 
 * **Benchmark processing pipeline**
 
 The generated P4 program applies N=2 number of tables::
 
-    p4benchmark --feature pipeline --tables 2 --table-size 32
+    p4benchmark --feature pipeline --tables 2 --table-size 32 --version 16
 
 * **Benchmark Read State**
 
 The generated P4 program declares 1 register and performs 10 number of read operations::
 
-    p4benchmark --feature read-state --registers 1 --operation 10
+    p4benchmark --feature read-state --registers 1 --operation 10 --version 16
 
 * **Benchmark Write State**
 
 The generated P4 program declares 1 register and performs 10 number of write operations::
 
-    p4benchmark --feature write-state --registers 1 --operation 10
+    p4benchmark --feature write-state --registers 1 --operation 10 --version 16
 
 Generated Files
 ---------------
