@@ -65,6 +65,12 @@ while i < n :
                 count5 += 1
         i += 1
 i=0
+# print count0
+# print count1
+# print count2
+# print count3
+# print count4
+# print count5
 if count2==max(count2,count3,count4) :
         while i<n :
                 if(mark[i]==2) :

@@ -13,6 +13,8 @@ PROG="main"
 read -p "Enter the language version {14|16} = " VERSION
 read -p "No. of Packets to send = " PACKETS
 read -p "Rate of sending packets(bytes/sec) = " RATE
+
+ps -ef | grep simple_switch | grep -v grep | awk '{print $2}' | xargs kill
    
 rm -rf output/
 

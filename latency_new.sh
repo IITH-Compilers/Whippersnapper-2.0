@@ -9,12 +9,12 @@ CLI_PATH=$BMV2_PATH/tools/runtime_CLI.py
 
 PROG="main"
 
-#read -p "Enter the language version {14|16} = " VERSION
-#read -p "No. of Packets to send = " PACKETS
-VERSION="16"
-PACKETS="10000"
+read -p "Enter the language version {14|16} = " VERSION
+read -p "No. of Packets to send = " PACKETS
+# VERSION="16"
+# PACKETS="10000"
 
-#ps -ef | grep simple_switch | grep -v grep | awk '{print $2}' | xargs kill
+ps -ef | grep simple_switch | grep -v grep | awk '{print $2}' | xargs kill
 #ps -ef | grep tshark | grep -v grep | awk '{print $2}' | xargs kill
 
 rm latency.csv
