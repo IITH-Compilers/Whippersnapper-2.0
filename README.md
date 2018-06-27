@@ -184,4 +184,9 @@ The above script is to automate the testing of a feature completely. The actual 
 9. Average of difference of these timestamps is taken for all the packets, which represents the latency.
 10. An algorithm is used to eliminate buggy values due to glitches in packet transfer, droppings. This is based on the fact that latency values are expected to be similar for each packet. The latency values are divided into various category. The category having the highest frequency will be the one to be selected and average of all values of only that category will be calculated. Note that if two categories are having major frequency count which is a rare case, we don't get much error by considering only one of them.
 
+## Contributors
 
+[Madhav Tummala](https://github.com/MadhavChoudhary)
+[Siddhant Bajaj](https://github.com/siddhantbajaj1)
+[Abhinav Jindal](https://github.com/AbhinavJindl)
+[Pavan Kumar Vaddineni](https://github.com/VaddineniPavankumar)
