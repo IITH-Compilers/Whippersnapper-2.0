@@ -9,7 +9,7 @@ Installation
 Run the following commands::
 
     pip install -r requirements.txt
-    python setup.py install
+    sudo python setup.py install
 
 Generate P4 Program and PCAP file for testing
 ---------------------------------------------
@@ -67,13 +67,13 @@ The generated P4 program applies N=2 number of tables::
 
 The generated P4 program declares 1 register and performs 10 number of read operations::
 
-    p4benchmark --feature read-state --registers 1 --operation 10 --version 16
+    p4benchmark --feature read-state --registers 1 --operations 10 --version 16
 
 * **Benchmark Write State**
 
 The generated P4 program declares 1 register and performs 10 number of write operations::
 
-    p4benchmark --feature write-state --registers 1 --operation 10 --version 16
+    p4benchmark --feature write-state --registers 1 --operations 10 --version 16
 
 Generated Files
 ---------------
@@ -92,7 +92,7 @@ The `output` directory contains::
 
 Run Behavioral Target
 ---------------------
-Require Behavioral Model 2 and P4C::
+Require Behavioral Model 2 and P4C
 
     $ cd output
     $ ./run_switch
@@ -145,12 +145,12 @@ To measure the latency produced by simple_switch (the time for packet to be proc
 	sudo ./veth_setup.sh -- once per session
 	g++ DataAlgo.cpp -o DataAlgo
 	g++ Percent.cpp -o Percent
-	Change lines 21, 61, 63 in measure_latency.sh according to the feature being tested.
+	Change lines 23, 63, 65 in measure_latency.sh according to the feature being tested.
 ```
 
 **Run Test**
 ```	
-sudo ./measure_latency.sh -- give desired no of packets, transmission rate and version, ex: 10000, 10000, 16
+    sudo ./measure_latency.sh -- give desired no of packets, transmission rate and version, ex: 10000, 10000, 16
 ```
 
 The latency values will be stored to <feature>-<version>-<packets>-<rate>.txt and the normalised percentage alues will be stored to <feature>-<version>-<packets>-<rate>-Percent.txt
@@ -164,12 +164,13 @@ DataAlgo filters the outliers in the dataset to some extent. It first calculates
 	sudo apt install tshark
 	cd /usr/share/wireshark/
 	nano init.lua  -- In line 29 set disable_lua = true
-	change line 27 of latency_new.sh according to the feature being tested.
+	change line 30 of latency_new.sh according to the feature being tested.
 ```
 **Run Test**
 ```
-	sudo ./latency_new.sh -- give desired no of packets and version, ex: 10000, 16`
+	sudo ./latency_new.sh -- give desired no of packets and version, ex: 10000, 16
 ```
+The results will be saved in latency.csv<br />
 
 ## Working
 The above script is to automate the testing of a feature completely. The actual process going on is
@@ -184,7 +185,7 @@ The above script is to automate the testing of a feature completely. The actual 
 9. Average of difference of these timestamps is taken for all the packets, which represents the latency.
 10. An algorithm is used to eliminate buggy values due to glitches in packet transfer, droppings. This is based on the fact that latency values are expected to be similar for each packet. The latency values are divided into various category. The category having the highest frequency will be the one to be selected and average of all values of only that category will be calculated. Note that if two categories are having major frequency count which is a rare case, we don't get much error by considering only one of them.
 
-### Contributors
+## Contributors
 
 [Madhav Tummala](https://github.com/MadhavChoudhary)<br />
 [Siddhant Bajaj](https://github.com/siddhantbajaj1)<br />
